@@ -9,3 +9,5 @@
 - [Step 02: project definition and final deliverables](./step-02-project-definition-and-final-deliverables.md)
 - [Step 03: project space and artifact classes](./step-03-project-space-and-artifact-classes.md)
 - [Step 04: user manual](./step-04-user-manual.md)
+- [Step 05: install from GitHub link](./step-05-install-from-github-link.md)
+- [Step 06: share readiness checklist](./step-06-share-readiness-checklist.md)

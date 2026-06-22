@@ -1,0 +1,7 @@
+interface:
+  display_name: "Project Launch Blueprint"
+  short_description: "Blueprint to init and generate prototype code"
+  default_prompt: "Use $project-launch-blueprint to initialize a project, inspect blueprint stages, and turn validated artifacts into prototype code."
+
+policy:
+  allow_implicit_invocation: true

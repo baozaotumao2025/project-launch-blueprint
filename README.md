@@ -5,7 +5,7 @@
 
 ## What This Is
 
-这是一套面向前端项目启动的分层方法论，用来把原始 `analysis/` 逐层收敛成：
+`project-launch-blueprint` 是一套面向前端项目启动的分层方法论，也是一个可分发的 Codex skill 模板。它将原始 `analysis/` 逐层收敛为：
 
 1. 业务能力
 2. 领域模型
@@ -17,9 +17,9 @@
 8. 实现桥接
 9. 发布为 skill 模板
 
-其中 `implementation` 不是附属说明，而是把已验证的中间产物真正翻译成用户项目里的原型代码、目录、测试和配置的最后落地层。
+其中 `implementation` 负责将已验证的中间产物转译为用户项目中的原型代码、目录、测试与配置，并完成最终落地。
 
-这套蓝图同时定义了：
+本仓库同时定义了：
 
 - `uv` 管理的 CLI 入口
 - revision-aware 的状态机
@@ -31,9 +31,33 @@
 - 默认把可追踪的中间产物也作为项目资产保留
 - 只排除纯本机缓存、敏感信息和可完全重建的噪音文件
 
-本目录下的所有链接都默认以 `records/project-launch-blueprint/` 为根目录，只使用相对路径。
+本目录下的所有链接默认以 `records/project-launch-blueprint/` 为根目录，只使用相对路径。
 
 其中前 7 项是生成层，质量门禁负责放行，实现桥接负责把已放行的产物翻译成真实代码。
+
+## Distribution
+
+通过 GitHub 链接访问时，这个仓库可作为协作入口，供查看、克隆或继续开发。
+
+作为 Codex skill 分发时，仓库中的 `SKILL.md` 与 `agents/openai.yaml` 提供了可识别的入口。
+
+当前仓库已经包含了可识别的 skill 入口：
+
+- `SKILL.md`
+- `agents/openai.yaml`
+
+直接克隆到本地时，它仍然可以作为项目仓库继续开发；在 Codex 中作为 skill 使用时，应通过 GitHub 分享/安装入口导入。
+
+当前使用手册见 [docs/step-04-user-manual.md](./docs/step-04-user-manual.md)。
+
+## Release Checklist
+
+在对外分享该仓库之前，建议确认：
+
+- 不要把 `.venv/`、`__pycache__/`、`.pytest_cache/` 这类本机开发产物提交到仓库
+- 不要把敏感信息放进仓库
+- 保留 `SKILL.md`、`agents/openai.yaml`、`README.md` 和 `docs/` 里的使用说明
+- 如果要作为 skill 安装入口分享，确保仓库内容已整理为稳定、可读的状态
 
 ## Core Rules
 
