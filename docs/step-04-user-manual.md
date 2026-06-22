@@ -32,6 +32,7 @@ plb init
 - 建立 `state.db`
 - 建立 `logs/`、`audits/`、`exports/`、`backups/`、`projections/`
 - 把项目状态置为 `initialized`
+- 准备 stage registry 和 review 记录空间
 
 初始化后，用户可以再运行：
 
@@ -47,13 +48,21 @@ plb status
 
 用来查看当前项目状态。
 
-## 3. What The User Should Expect
+## 3. What The User Should Do Next
 
 初始化不会直接生成业务代码。
 
 它只会建立 skill 的运行态和项目状态基础。
 
-后续真正生成原型代码，要等阶段产物和 `implementation` 流程继续推进。
+下一步应该按业务流往下推进：
+
+1. 查看安装后契约和项目边界
+2. 定义最终交付物
+3. 分类正式资产、持久运行记录、临时执行物
+4. 依次推进 `discovery`、`domain`、`state`、`api`、`design`、`slice`、`gates`、`implementation`
+5. 在每一阶段使用 `plan -> status -> review packet -> review run -> review record -> approve/reject -> next`
+
+`implementation` 才会进入原型代码、目录、测试和配置的正式生成。
 
 ## 4. Positive Scenarios
 
@@ -61,6 +70,8 @@ plb status
 - `init` 之后，项目状态变为 `initialized`
 - `status` 可以读到初始化后的状态
 - 初始化只创建 skill 运行态目录，不会污染业务源码树
+- 用户可以按 stage 顺序推进，而不是跳过前置步骤
+- 每一阶段都能先看 `status`，再做 review，再决定是否 `approve`
 
 ## 5. Negative Scenarios
 
@@ -68,6 +79,9 @@ plb status
 - 在 `init` 之前，项目状态不应该被误判为已初始化
 - 初始化不应该自动生成业务源码目录
 - 初始化不应该直接产生原型代码
+- 没有先 `review packet` 就不应该直接假装完成审查
+- 没有 `review run` 就不应该把结果当成已经审过
+- 没有 `review record` 就不应该把结果当成已落库
 
 ## 6. Verification Checklist
 
@@ -76,4 +90,5 @@ plb status
 - 能确认 `.project-launch-blueprint/` 被建立
 - 能确认 `src/`、`tests/` 这类业务源码目录没有被初始化命令无端创建
 - 能确认初始化阶段没有越权进入实现阶段
-
+- 能按 stage 顺序推进
+- 能看懂每一阶段的 review packet / review run / review record / approve / reject / next

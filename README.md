@@ -1,6 +1,31 @@
 # Project Launch Blueprint
 
-`project-launch-blueprint` is a Codex skill for turning raw project analysis into validated blueprint artifacts, implementation plans, and prototype code.
+`project-launch-blueprint` is a Codex skill for turning a user project from installation into a shareable blueprint, staged contracts, and implementation-ready assets.
+
+## What This Project Builds
+
+This repository defines a complete launch protocol:
+
+1. Install the skill
+2. Initialize the project space
+3. Inspect the post-install contract
+4. Define the project boundary and final deliverables
+5. Classify permanent assets, persistent runtime records, and disposable execution artifacts
+6. Advance stage by stage through `discovery`, `domain`, `state`, `api`, `design`, `slice`, `gates`, and `implementation`
+7. Finish with the user manual, GitHub installation guidance, and the share readiness checklist
+
+The operating sequence is intentionally simple:
+
+```text
+plan -> status -> review packet -> review run -> review record -> approve/reject -> next
+```
+
+`implementation` is the last bridge. It turns approved stage outputs into real prototype code, tests, and configuration inside the target project.
+
+The same internal workflow should be reachable through two surfaces:
+
+- `CLI` for deterministic execution and testing
+- natural language for guided operation and intent routing
 
 ## Codex Quick Start
 
@@ -12,52 +37,61 @@
 uv run plb init
 ```
 
-4. Then inspect the project state:
+4. Inspect the project state:
 
 ```bash
 uv run plb status
 ```
 
-5. For the full operating flow, read [docs/step-04-user-manual.md](./docs/step-04-user-manual.md).
+5. Then follow the stage flow and review loop described in [docs/step-04-user-manual.md](./docs/step-04-user-manual.md).
 
 ## Install
 
-Install this skill from the GitHub link in Codex. After installation, use it on the target project with `plb init` and `plb status`.
+Install this skill from the GitHub link in Codex. After installation, the target project should use `plb init`, `plb status`, stage commands, and review commands as the canonical operating surface.
 
 ## First Run
 
 Run `uv run plb init` in the target project, then `uv run plb status`.
 
-## What It Does
+## Stage Flow
 
-This skill turns raw `analysis/` into:
+The canonical stage order is:
 
-1. 业务能力
-2. 领域模型
-3. 状态机
-4. API 契约
-5. 设计系统
-6. 垂直切片实现
-7. 质量门禁
-8. 实现桥接
-9. 发布为 skill 模板
+1. `discovery`
+2. `domain`
+3. `state`
+4. `api`
+5. `design`
+6. `slice`
+7. `gates`
+8. `implementation`
 
-`implementation` translates approved artifacts into prototype code, directories, tests, and configuration inside the target project.
+Each stage is expected to be worked in the same rhythm:
 
-It also defines:
+- `plan` to freeze the stage intent
+- `status` to inspect current progress
+- `review packet` to freeze the review input
+- `review run` to execute the isolated review
+- `review record` to write back the verdict
+- `approve` or `reject` to finalize the stage result
+- `next` to advance when the stage is ready
 
-- `uv` 管理的 CLI 入口
-- revision-aware 的状态机
-- fresh subagent 的隔离校验规则
-- 模板打包和发布方式
-- 命令参考表和阶段推进约束
-- `analysis/` as the raw input layer
-- `.project-launch-blueprint/projections/` for derived working copies
-- project assets, process artifacts, and required state records
-- default retention of traceable intermediate artifacts
-- exclusion only of local caches, secrets, and fully reproducible noise
+## Project Boundaries
 
-All links in this repository are relative to `records/project-launch-blueprint/`.
+This skill keeps three spaces separate:
+
+- `skill space`: the installed Codex capability bundle
+- `project space`: the user project that receives the blueprint and generated assets
+- runtime execution artifacts: state, audits, projections, and temporary review material
+
+The repository also distinguishes:
+
+- permanent blueprint artifacts
+- generated project artifacts
+- persistent runtime artifacts
+- disposable runtime artifacts
+
+Only the first three should be preserved as durable project history when they help the next reader continue the work.
 
 ## Skill Entry
 
@@ -67,8 +101,8 @@ All links in this repository are relative to `records/project-launch-blueprint/`
 ## Repository Contents
 
 - `README.md` for the public overview
-- `docs/` for installation, sharing, and internal operating notes
-- `cli-architecture.md` and `command-reference.md` for command behavior
+- `docs/` for installation, user manual, and share preparation
+- `command-reference.md` for the canonical command contract
 - `workflow-state.md` for state and revision rules
 - `implementation/` for the final bridge into prototype code
 

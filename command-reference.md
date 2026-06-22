@@ -1,7 +1,8 @@
 # Command Reference
 
 > 这是一份面向实现的最终命令参考表。  
-> 它把 `uv run plb` 的全局入口、阶段命令和 review 命令收敛成一张可实现的清单。
+> 它把 `uv run plb` 的全局入口、阶段命令和 review 命令收敛成一张可实现的清单。  
+> 命令顺序必须服务于业务流：安装 -> 初始化 -> 查看契约 -> 定义边界 -> 分类资产 -> 分阶段推进 -> 收尾分享。
 
 ## 1. Global Entry
 
@@ -9,10 +10,10 @@
 
 用途：
 
-- 初始化项目状态库
-- 创建 `.project-launch-blueprint/projections/` 投影目录
-- 建立 stage registry
-- 建立 revision 和 audit 基础设施
+- 初始化 project space
+- 创建 `.project-launch-blueprint/` 运行目录
+- 建立 state DB、projections、audits、exports、logs、backups
+- 为后续 stage 和 review 流程建立基础状态
 
 参数：
 
@@ -31,9 +32,10 @@
 
 用途：
 
-- 展示整个项目当前状态
-- 汇总阶段进度
-- 显示当前阻塞点和下一步
+- 展示当前项目状态
+- 汇总 stage 进度
+- 显示当前阻塞点、下一步和最近一次 review 结果
+- 用于“查看安装后契约”和“查看当前推进位置”
 
 参数：
 
@@ -49,9 +51,9 @@
 
 用途：
 
-- 打包当前模板
+- 打包当前 blueprint
 - 导出 skill bundle
-- 生成发布清单
+- 生成发布清单和分享材料
 
 参数：
 
@@ -65,7 +67,7 @@
 
 ## 2. Stage Commands
 
-所有阶段都遵守同一套模式：
+所有阶段都遵守同一套模式，且必须按顺序推进：
 
 ```txt
 uv run plb stage <stage_name> plan
@@ -77,52 +79,52 @@ uv run plb stage <stage_name> set <status>
 
 ### 2.1 Discovery
 
-- `plan`：冻结原始分析输入，生成 capability map 目标
-- `status`：查看 capability map 进度
-- `next`：生成 capability map 并触发结构验证与隔离审查，成功后把下一阶段置为 active
+- `plan`：冻结安装后输入与 project boundary 的 discovery 目标
+- `status`：查看 discovery 进度
+- `next`：生成 discovery packet，执行 review loop，完成后推进到 domain
 - `verify`：只检查 discovery 产物是否可进入 domain
 - `set`：手动写入阶段状态，便于推进、阻塞或回退
 
 ### 2.2 Domain
 
-- `plan`：基于 approved discovery 冻结 domain 边界
+- `plan`：基于 approved discovery 冻结 domain 边界和 final deliverables
 - `status`：查看 domain revision
-- `next`：生成 domain model 并触发验证
+- `next`：生成 domain packet，执行 review loop，完成后推进到 state
 - `verify`：只检查 domain 是否可进入 state
 
 ### 2.3 State
 
 - `plan`：冻结 domain + discovery 的输入范围
 - `status`：查看状态机 revision 和回退点
-- `next`：生成 state machine map 并验证转移
+- `next`：生成 state packet，执行 review loop，完成后推进到 api
 - `verify`：只检查 state 是否可进入 api
 
 ### 2.4 API
 
 - `plan`：冻结 state + domain + discovery 的输入范围
 - `status`：查看 API contract revision
-- `next`：生成 API contract map 并验证请求响应语义
+- `next`：生成 API packet，执行 review loop，完成后推进到 design
 - `verify`：只检查 api 是否可进入 design
 
 ### 2.5 Design
 
 - `plan`：冻结 API contract 和 validation report
 - `status`：查看 design system revision
-- `next`：生成 design system map 并验证组件规则
+- `next`：生成 design packet，执行 review loop，完成后推进到 slice
 - `verify`：只检查 design 是否可进入 slice
 
 ### 2.6 Slice
 
 - `plan`：冻结 api + design + state
 - `status`：查看 vertical slice revision
-- `next`：生成 vertical slice map 并验证端到端闭环
+- `next`：生成 slice packet，执行 review loop，完成后推进到 gates
 - `verify`：只检查 slice 是否可进入 gates
 
 ### 2.7 Gates
 
 - `plan`：冻结全部已批准上游输出
 - `status`：查看 quality gate map 和 readiness
-- `next`：生成 quality gate map 并验证发布条件
+- `next`：生成 gates packet，执行 review loop，完成后推进到 implementation
 - `verify`：只检查 gates 是否可进入 implementation
 
 ### 2.8 Implementation
@@ -140,6 +142,7 @@ uv run plb stage <stage_name> set <status>
 
 - 生成只读审查包
 - 固化当前阶段和已批准上游输入
+- 为 `review run` 提供冻结输入
 
 参数：
 
@@ -154,6 +157,7 @@ uv run plb stage <stage_name> set <status>
 - 把 packet 交给 fresh reviewer
 - 使用隔离上下文执行审查
 - 落盘审查结果
+- 这是“真的审查”的一步，不是只看摘要
 
 参数：
 
@@ -167,7 +171,8 @@ uv run plb stage <stage_name> set <status>
 用途：
 
 - 根据 worker verdict 自动写回审查结果
-- 自动更新 revision 的 review_state 为 `passed` / `needs_revision` / `failed`
+- 自动更新 review_state 为 `passed` / `needs_revision` / `failed`
+- 把 review 结果从执行态变成权威状态记录
 
 参数：
 
@@ -211,6 +216,9 @@ uv run plb stage <stage_name> set <status>
 - 每条输出都要有明确 `status`
 - 每条输出都要有 `rollback_point`
 - 每条输出都要说明是否推进状态
+- `review packet` 输出必须说明冻结了哪些上游输入
+- `review run` 输出必须说明审查是否在隔离上下文中执行
+- `review record` 输出必须说明最终写回的 verdict
 
 ## 5. Failure Rules
 
@@ -222,5 +230,6 @@ uv run plb stage <stage_name> set <status>
 - 校验失败
 - 审查失败
 - 回归失败
+- review packet / run / record 任一步失败，都不应假装下一步已完成
 
 不得把失败混成“泛泛的异常”。
