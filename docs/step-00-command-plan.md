@@ -59,8 +59,8 @@ Stage 顺序固定为：
 
 ### 3.0 Entry Surfaces
 
-- `plb init` 和“初始化这个项目”应映射到同一条内部初始化逻辑
-- `plb status` 和“查看当前状态”应映射到同一条内部状态读取逻辑
+- `uv run plb init` 和“初始化这个项目”应映射到同一条内部初始化逻辑
+- `uv run plb status` 和“查看当前状态”应映射到同一条内部状态读取逻辑
 - stage 命令和自然语言里的“开始某个阶段”“查看某个阶段”“继续下一步”应映射到同一套 stage 服务
 
 ### 3.1 Read-Only Commands

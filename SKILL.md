@@ -12,7 +12,7 @@ description: Install, initialize, and operate the Project Launch Blueprint skill
 3. Install or import the skill from the GitHub link in Codex.
 4. In the target project, run `uv run plb init`.
 5. Then run `uv run plb status`.
-6. If the target root is not the current directory, pass `-C /path/to/project` or set `PLB_ROOT_DIR`.
+6. If the target root is not the current directory, pass `--root /path/to/project` or set `PLB_ROOT_DIR`.
 
 ## What This Skill Does
 
@@ -26,6 +26,7 @@ description: Install, initialize, and operate the Project Launch Blueprint skill
 - Keep user manual, GitHub installation guidance, and share readiness instructions aligned with the same operating contract.
 - Expose the same internal workflow through both `CLI` and natural language entry surfaces.
 - Fail hard when the target root is invalid instead of falling back to an inferred location.
+- Prefer `uv run plb ...` as the canonical invocation pattern so the project-managed environment stays explicit and reproducible.
 
 ## Reading Order
 

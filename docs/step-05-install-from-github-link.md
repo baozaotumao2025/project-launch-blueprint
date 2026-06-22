@@ -29,8 +29,8 @@ GitHub 链接的作用有两层：
 2. 在 Codex 中把这个仓库作为 skill 导入或安装
 3. 先读 README
 4. 再读用户手册
-5. 在目标项目里执行 `plb init`
-6. 再用 `plb status` 确认初始化状态
+5. 在目标项目里执行 `uv run plb init`
+6. 再用 `uv run plb status` 确认初始化状态
 
 ## 4. What To Tell Collaborators
 

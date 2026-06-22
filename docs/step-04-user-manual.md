@@ -14,13 +14,13 @@
 
 在目标项目根目录下执行初始化。
 
-如果你在本仓库里本地开发，可以使用：
+优先使用下面这条 canonical 写法：
 
 ```bash
 uv run plb init
 ```
 
-如果你已经把它安装成可执行命令，也可以使用：
+如果你的环境里已经安装了 `plb` 可执行命令，也可以把它当作可选 alias 使用：
 
 ```bash
 plb init
@@ -29,7 +29,7 @@ plb init
 如果你想明确指定目标项目根目录，可以使用：
 
 ```bash
-plb -C /path/to/project init
+uv run plb --root /path/to/project init
 ```
 
 初始化后会发生这些事：
@@ -46,7 +46,7 @@ plb -C /path/to/project init
 uv run plb status
 ```
 
-或者：
+如果你的环境里已经安装了 `plb` 可执行命令，也可以使用：
 
 ```bash
 plb status
@@ -55,7 +55,7 @@ plb status
 或者：
 
 ```bash
-plb -C /path/to/project status
+uv run plb --root /path/to/project status
 ```
 
 用来查看当前项目状态。
