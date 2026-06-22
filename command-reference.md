@@ -17,6 +17,7 @@
 
 参数：
 
+- `--root <path>` / `-C <path>`: explicitly choose the project root
 - `--project <project_key>`
 - `--name <project_name>`
 - `--brief-file <path>`
@@ -39,6 +40,7 @@
 
 参数：
 
+- `--root <path>` / `-C <path>`: explicitly choose the project root
 - `--project <project_key>`
 - `--json`
 - `--verbose`

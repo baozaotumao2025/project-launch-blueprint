@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
 
 RUNTIME_DIR_NAME = ".project-launch-blueprint"
 DOCS_DIR_NAME = "records/project-launch-blueprint"
+ROOT_ENV_VAR = "PLB_ROOT_DIR"
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,4 +50,6 @@ class ProjectPaths:
 
 
 def resolve_project_root(value: str | None = None) -> Path:
-    return Path(value).expanduser().resolve() if value else Path.cwd().resolve()
+    env_value = os.environ.get(ROOT_ENV_VAR)
+    candidate = value or env_value
+    return Path(candidate).expanduser().resolve() if candidate else Path.cwd().resolve()

@@ -26,6 +26,12 @@ uv run plb init
 plb init
 ```
 
+如果你想明确指定目标项目根目录，可以使用：
+
+```bash
+plb -C /path/to/project init
+```
+
 初始化后会发生这些事：
 
 - 创建 `.project-launch-blueprint/` 运行目录
@@ -44,6 +50,12 @@ uv run plb status
 
 ```bash
 plb status
+```
+
+或者：
+
+```bash
+plb -C /path/to/project status
 ```
 
 用来查看当前项目状态。
