@@ -27,6 +27,8 @@ The same internal workflow should be reachable through two surfaces:
 - `CLI` for deterministic execution and testing
 - natural language for guided operation and intent routing
 
+The bootstrap entry is dependency-light and should fail hard when the target root is invalid. Use `-C/--root` or `PLB_ROOT_DIR` when you want to point at a project explicitly.
+
 ## Codex Quick Start
 
 1. Read [`SKILL.md`](./SKILL.md).
@@ -37,17 +39,29 @@ The same internal workflow should be reachable through two surfaces:
 uv run plb init
 ```
 
+If you want to point at a specific project root, run:
+
+```bash
+plb -C /path/to/project init
+```
+
 4. Inspect the project state:
 
 ```bash
 uv run plb status
 ```
 
+Or:
+
+```bash
+plb -C /path/to/project status
+```
+
 5. Then follow the stage flow and review loop described in [docs/step-04-user-manual.md](./docs/step-04-user-manual.md).
 
 ## Install
 
-Install this skill from the GitHub link in Codex. After installation, the target project should use `plb init`, `plb status`, stage commands, and review commands as the canonical operating surface.
+Install this skill from the GitHub link in Codex. After installation, the target project should use `plb init`, `plb status`, stage commands, and review commands as the canonical operating surface. The bootstrap entry should work without making the user guess the root directory or recover from a silent fallback.
 
 ## First Run
 
