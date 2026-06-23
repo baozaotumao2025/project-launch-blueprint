@@ -83,6 +83,8 @@
 ```json
 {
   "coverage": "",
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "token_purity": "",
   "semantic_consistency": "",
   "component_reusability": "",
@@ -104,4 +106,3 @@
 - 先输出 design system map
 - 再输出 design-system validation report
 - 不输出 design-system 以外的对象
-

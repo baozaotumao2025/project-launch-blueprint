@@ -33,6 +33,7 @@
 | Step | Input | Action | Output | Can Roll Back |
 | --- | --- | --- | --- | --- |
 | Read | `discovery capability map` + `discovery validation report` + 辅助证据 | 读取主输入，确认哪些能力可以继续抽象，哪些还不稳定；辅助证据只用于校验，不重新加工 | 输入摘要 | Yes |
+| Collect | `discovery capability map` + `discovery validation report` + 辅助证据 | 逐项枚举所有输入，生成 inventory 和覆盖模板 | input inventory | Yes |
 | Group | `discovery capability map` 中的 capabilities | 按业务意图、语义一致性、生命周期、协作边界进行分组 | 候选领域簇 | Yes |
 | Name | 候选领域簇 | 为每个簇提炼稳定术语，统一业务语言，去掉页面化/技术化命名 | bounded context 候选 | Yes |
 | Split / Merge | bounded context 候选 | 检查是否混入多个职责，必要时拆分或合并 | context map 草案 | Yes |
@@ -57,6 +58,7 @@
 - 不允许把 API、页面、表单、数据库表直接当成领域对象。
 - 不允许为了实现方便而合并语义不同的 context。
 - 不允许把高频查询视图、报表视图、审批流程强行塞进同一个模型。
+- 任何进入模型的输入都必须在 inventory 里出现一次，并且在覆盖矩阵里有明确去向。
 
 ## 6. Design Heuristics
 

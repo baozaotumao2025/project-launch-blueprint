@@ -54,6 +54,28 @@ class StageStatus(str, Enum):
     NEEDS_REVISION = "needs_revision"
 
 
+class StageLifecyclePhase(str, Enum):
+    SEEDED = "seeded"
+    PLANNED = "planned"
+    PACKET_CREATED = "packet_created"
+    REVIEW_RUNNING = "review_running"
+    REVIEW_RECORDED = "review_recorded"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    COMPLETED = "completed"
+    BLOCKED = "blocked"
+    STALE = "stale"
+    FAILED = "failed"
+
+
+class StageHealth(str, Enum):
+    STABLE = "stable"
+    DEGRADED = "degraded"
+    BLOCKED = "blocked"
+    STALE = "stale"
+    FAILED = "failed"
+
+
 @dataclass(slots=True)
 class CommandResult:
     status: str
@@ -73,6 +95,28 @@ class ReviewRecord:
     stage: WorkflowStage
     state: ReviewState = ReviewState.PACKET_CREATED
     payload: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
+class StageLifecycleRecord:
+    stage: WorkflowStage
+    phase: StageLifecyclePhase = StageLifecyclePhase.SEEDED
+    health: StageHealth = StageHealth.STABLE
+    status: StageStatus = StageStatus.PENDING
+    last_event: str = "seeded"
+    details: dict[str, Any] = field(default_factory=dict)
+    updated_at: str = ""
+
+
+@dataclass(slots=True)
+class StageLifecycleEvent:
+    stage: WorkflowStage
+    event: str
+    phase: StageLifecyclePhase
+    health: StageHealth
+    status: StageStatus
+    details: dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
 
 
 @dataclass(slots=True)

@@ -50,3 +50,25 @@ def test_reject_review_keeps_worker_failed(tmp_path):
     assert result.data["recorded_review_state"] == ReviewState.FAILED.value
     assert result.data["worker_review_state"] == ReviewState.FAILED.value
     assert record.state == ReviewState.FAILED
+
+
+def test_approve_review_completes_stage_when_worker_passes(tmp_path):
+    store = _store(tmp_path)
+    store.write_review_artifact(
+        WorkflowStage.DISCOVERY,
+        "review",
+        {
+            "review_state": ReviewState.PASSED.value,
+            "summary": "isolated review passed",
+            "violations": [],
+        },
+    )
+
+    result = approve_review(WorkflowStage.DISCOVERY.value, store)
+    stage_record = store.load_stage(WorkflowStage.DISCOVERY)
+    lifecycle = store.load_stage_lifecycle(WorkflowStage.DISCOVERY)
+
+    assert result.data["recorded_review_state"] == ReviewState.PASSED.value
+    assert stage_record.status.value == "completed"
+    assert lifecycle.phase.value == "approved"
+    assert lifecycle.health.value == "stable"

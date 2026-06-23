@@ -84,6 +84,8 @@
 ```json
 {
   "coverage": "",
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "boundary_purity": "",
   "method_fit": "",
   "status_semantics": "",

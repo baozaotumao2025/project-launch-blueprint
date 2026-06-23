@@ -18,7 +18,7 @@
 5. Validate
 6. Decide
 
-输入是一个 analysis 目录，包含 brief、story map、page、feature、gwt 和 relations。
+输入是一个 analysis 目录，包含 brief、story map、page、feature、gwt、relations 以及 analysis inventory。
 
 你的任务不是自由总结，而是做规范化汇总、去重和归并，输出业务能力地图。
 
@@ -33,11 +33,17 @@
 8. 不允许自行增加、删除或重排 workflow 步骤。
 9. 不允许输出 `method.md` 之外的新阶段。
 10. 输出必须符合 `output-schema.md` 中的 capability 格式。
+11. `analysis_inventory` 里的每个文件都必须在 `analysis_coverage_matrix` 里出现一次，不能遗漏，也不能重复归账。
+12. `analysis_coverage_matrix.status` 只能使用 `mapped`、`excluded` 或 `needs_review`。
+13. 任何未能归入 capability 的文件，必须写成显式 exclusion，并说明原因。
 
 请显式列出：
 - 你把哪些 feature/page/story step 合并成了同一个 capability
 - 你为什么没有把某些相近内容合并
 - 每条 capability 的证据链
+- `analysis_inventory` 的逐文件对账结果
+- `analysis_coverage_matrix` 的逐文件对账结果
+- `unmapped_files` 的显式排除结果
 - 每条 capability 的生命周期阶段
 - 至少 3 个你主动构造的反例，以及为什么它们不会通过
 
@@ -51,7 +57,7 @@
 
 请先读取并严格遵守 `method.md`、`validation-rules.md`、`output-schema.md` 和 `example-output.md`。
 
-请检查下面的能力地图，找出所有可能的幻觉、重名、漏项、UI 化描述、技术化描述和跨阶段混写。
+请检查下面的能力地图，找出所有可能的幻觉、重名、漏项、UI 化描述、技术化描述、跨阶段混写，以及未对账的 analysis 文件。
 
 请先做正向测试，再做负向测试。
 
@@ -69,6 +75,7 @@
 9. 这个能力是否存在同词异义？
 10. 这个能力是否能被最小反例击穿？
 11. 这个能力是否符合 `output-schema.md` 的字段要求？
+12. 这个能力是否遗漏了任何 inventory 文件的对账？
 ```
 
 ## 3. Handoff

@@ -8,6 +8,8 @@
 {
   "goal": "",
   "scope": "",
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "goal_registry": [
     {
       "goal_id": "",
@@ -116,6 +118,8 @@
     "current_goal": "",
     "next_goal": ""
   },
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "latest_verification": {
     "goal_id": "",
     "regression_passed": false,

@@ -36,11 +36,13 @@
 10. 必须先给出通过理由，再给出反例攻击结果。
 11. 如果任一负向测试通过了，说明模型有误，必须回退或重写。
 12. 辅助证据只能用于核验、补漏和反例攻击，不得提升为新的主概念。
-13. 输出必须符合 `output-schema.md`。
+13. 已批准的上游输入必须先冻结成 inventory / coverage matrix，不能在审查中临时补写。
+14. 输出必须符合 `output-schema.md`。
 
 请显式列出：
 - 每个 token 对应哪些契约或状态语义
 - 每个 component 对应哪些 API 能力或业务状态
+- 每个 component 冻结了哪些 upstream inputs
 - 每个 component 的 states / variants / sizes
 - 为什么这些 token 和 component 可以跨切片复用
 - accessibility / responsive / motion 的依据

@@ -38,6 +38,9 @@
   "testability": "",
   "boundary_purity": "",
   "language_consistency": "",
+  "analysis_inventory": [],
+  "analysis_coverage_matrix": [],
+  "unmapped_files": [],
   "positive_test_results": [],
   "negative_test_results": [],
   "item_results": [],
@@ -46,6 +49,13 @@
   "accepted_items": []
 }
 ```
+
+### 2.1 Field Notes
+
+- `analysis_inventory`: every file discovered under `analysis/`, in stable path order.
+- `analysis_coverage_matrix`: one row per inventory item, with the mapping decision and evidence.
+- `unmapped_files`: inventory items that were intentionally excluded or still need human review.
+- `item_results`: capability-level verdicts; the coverage matrix is file-level, so both layers stay visible.
 
 ## 3. Usage Rule
 

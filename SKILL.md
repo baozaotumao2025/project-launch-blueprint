@@ -10,44 +10,55 @@ description: Install, initialize, and operate the Project Launch Blueprint skill
 1. Read [`README.md`](./README.md).
 2. Read [`docs/step-04-user-manual.md`](./docs/step-04-user-manual.md).
 3. Install or import the skill from the GitHub link in Codex.
-4. In the target project, run `uv run plb init`.
-5. Then run `uv run plb status`.
-6. If the target root is not the current directory, pass `--root /path/to/project` or set `PLB_ROOT_DIR`.
+4. Run `uv run plb init`.
+5. Run `uv run plb status`.
+6. If needed, pass `--root /path/to/project` or set `PLB_ROOT_DIR`.
 
-## What This Skill Does
+## Read Next
 
-- Install the skill into Codex and initialize the target project space.
-- Define the post-install contract so the project knows what was created, what stayed out, and what must be preserved.
-- Define the project boundary and final deliverables before implementation starts.
-- Classify permanent blueprint artifacts, generated project artifacts, persistent runtime artifacts, and disposable runtime artifacts.
-- Advance the project through `discovery`, `domain`, `state`, `api`, `design`, `slice`, `gates`, and `implementation`.
-- Use the review loop `plan -> status -> review packet -> review run -> review record -> approve/reject -> next` to keep every stage auditable.
-- Turn approved stage outputs into prototype code, directories, tests, and configuration in the target project.
-- Keep user manual, GitHub installation guidance, and share readiness instructions aligned with the same operating contract.
-- Expose the same internal workflow through both `CLI` and natural language entry surfaces.
-- Fail hard when the target root is invalid instead of falling back to an inferred location.
-- Prefer `uv run plb ...` as the canonical invocation pattern so the project-managed environment stays explicit and reproducible.
-
-## Reading Order
-
-1. `README.md`
-2. `docs/step-04-user-manual.md`
-3. `docs/step-05-install-from-github-link.md`
-4. `docs/step-01-skill-installation-and-artifact-contract.md`
-5. `docs/step-02-project-definition-and-final-deliverables.md`
-6. `docs/step-03-project-space-and-artifact-classes.md`
-7. `command-reference.md`
-8. `cli-architecture.md`
+1. `docs/step-05-install-from-github-link.md`
+2. `docs/step-01-skill-installation-and-artifact-contract.md`
+3. `docs/step-02-project-definition-and-final-deliverables.md`
+4. `docs/step-03-project-space-and-artifact-classes.md`
+5. `command-reference.md`
+6. `cli-architecture.md`
+7. `docs/tutorial/index.md`
+8. `adr/README.md`
 9. `implementation/index.md`
 
-## Operating Rules
+## Do This
+
+1. Initialize the target project.
+2. Inspect `status`.
+3. Follow the stage flow in order:
+   `discovery` -> `domain` -> `state` -> `api` -> `design` -> `slice` -> `gates` -> `implementation`
+4. Use the shared rhythm for each stage:
+   `plan` -> `status` -> `review packet` -> `review run` -> `review record` -> `approve/reject` -> `next`
+5. Use `uv run plb route "<text>"` when you want the natural-language entry point.
+6. For every stage, require a frozen stage-document inventory and matching coverage template before review can pass.
+7. For `discovery`, also require a file-level `analysis_inventory` and matching coverage template.
+8. For `domain`, also require an approved-discovery-backed input inventory and matching coverage template.
+9. For `state`, `api`, `design`, `slice`, and `gates`, also require approved upstream input bundles and matching coverage templates.
+10. For strict E2E testing, create a temporary project root under `/tmp`, seed a minimal `analysis/`, run the full stage chain, then delete the temp root after the test.
+
+## Rules
 
 - Keep `skill space` and `project space` separate.
-- Treat the stage flow as business progression, not as a generic command catalog.
-- Use `plan`, `status`, `review packet`, `review run`, `review record`, `approve/reject`, and `next` as the shared rhythm for every stage.
-- Treat `implementation` as the last bridge from verified artifacts to real prototype code.
+- Treat the stage flow as business progression.
 - Do not skip validation before moving to the next stage.
+- Treat `implementation` as the last bridge from verified artifacts to implementation code, scaffolds, and verification artifacts.
+- Treat `implementation` as the last bridge from verified artifacts to implementation scaffolds, regression checks, and handoff records; do not promise a finished interactive UI unless the target project has a real frontend runtime path.
+- Treat stage input inventory and coverage validation as code-enforced, not prompt-enforced.
+- Treat stage document inventory and coverage validation as code-enforced, not prompt-enforced.
 - Keep temporary execution files separate from durable project assets unless the docs explicitly say they should be preserved.
+- Keep this file short and navigational; prefer links to companion files instead of duplicating long explanations.
+- Treat 200 lines as a soft upper bound for `SKILL.md` so the skill stays efficient to read in-session.
+
+## Decision Records
+
+- Use `adr/` for implementation decisions and read it after the operating contract.
+- Use `docs/tutorial/` for stage-by-stage teaching material and read it before implementation details.
+- When a detail needs more than one short rule, move it into `README.md`, `docs/`, `command-reference.md`, or `adr/` and link to it here.
 
 ## Constraints
 

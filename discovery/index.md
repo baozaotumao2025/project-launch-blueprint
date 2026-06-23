@@ -1,6 +1,6 @@
 # Discovery
 
-> 第一阶段目录：只负责 `analysis -> discovery capability map -> discovery validation report -> go / no-go`。
+> 第一阶段目录：只负责 `analysis inventory -> discovery capability map -> discovery validation report -> go / no-go`。
 > 这一层的职责是把混杂的原始材料压缩成稳定、可验证的业务能力事实，为后续所有抽象提供唯一主输入。
 
 ## Files

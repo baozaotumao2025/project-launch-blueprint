@@ -20,6 +20,7 @@
 - [ ] 已读取 `output-schema.md`
 - [ ] 已读取 `prompt-templates.md`
 - [ ] 已读取 `example-output.md`
+- [ ] 已冻结已批准的上游输入 inventory
 
 ## 2. Build
 
@@ -35,6 +36,7 @@
 - [ ] 已明确 mock / real 切换方式
 - [ ] 已明确分支和提交策略
 - [ ] 已定义每个 goal 完成后的回归范围
+- [ ] 已对上游输入逐项对账
 
 ## 3. Validate
 

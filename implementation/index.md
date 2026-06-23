@@ -8,6 +8,8 @@
 
 这组文件负责把前面各层的“可验证语义”转换成“可执行代码计划”，让新项目可以直接按同一套规则落到仓库结构、模块边界、测试和发布流程里。
 
+implementation 也会冻结已批准的上游输入 inventory / coverage matrix，确保实现计划能逐项对账到每个输入来源。
+
 它的目标不是写散点代码，而是把一个明确的 `goal` 翻译成：
 
 - implementation plan
@@ -40,6 +42,7 @@
 - `vertical slice map`
 - `quality-gates validation report`
 - `technical-solution.md`
+- frozen upstream input inventory
 
 ## 4. What It Produces
 

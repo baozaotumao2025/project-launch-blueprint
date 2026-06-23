@@ -97,6 +97,7 @@ Stage 顺序固定为：
 - 初始化后读取状态
 - 确认运行目录存在
 - 确认业务源码目录没有被误创建
+- 运行 `uv run pytest` 时应同时产出 `src/plb` 的 coverage 基线
 
 ### 5.2 Stage Tests
 
@@ -112,7 +113,23 @@ Stage 顺序固定为：
 - `review record` 是否写回 verdict
 - `approve` / `reject` 是否遵守 worker verdict
 
-### 5.4 Finalization Tests
+### 5.4 End-to-End Tests
+
+E2E 测试要覆盖正向和负向，不只跑 happy path。
+
+推荐路径：
+
+1. 在 `/tmp` 下创建临时项目根目录
+2. 初始化项目
+3. 先验证一个负向场景，比如 `discovery` 在 `analysis/` 不完整时应阻断
+4. 填入最小可用 `analysis/`，再跑完整 stage 链路
+5. 对 `discovery` 和 `domain` 各做一次覆盖矩阵篡改，确认隔离 reviewer 会拒绝
+6. 对 `route` 做一次歧义输入检查，确认自然语言不会被错误路由成“自动成功”
+7. 对 `implementation` 做一次缺 `--goal` 检查，确认会阻断
+8. 进入 `implementation` 后，用小目标跑完 `plan -> next -> verify`
+9. 测试结束后删除临时目录
+
+### 5.5 Finalization Tests
 
 - `implementation` 是否只在 gates 通过后推进
 - 用户手册是否与命令行为一致

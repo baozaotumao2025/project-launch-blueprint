@@ -286,6 +286,62 @@
   "language_consistency": "<pass|partial|fail>",
   "aggregate_integrity": "<pass|partial|fail>",
   "behavior_richness": "<pass|partial|fail>",
+  "domain_input_inventory": [
+    {
+      "path": "discovery/discovery-capability-map.json",
+      "input_type": "discovery capability map",
+      "role": "primary",
+      "size_bytes": 5120
+    },
+    {
+      "path": "analysis/features/index.md",
+      "input_type": "auxiliary evidence",
+      "role": "secondary",
+      "size_bytes": 2048
+    }
+  ],
+  "domain_coverage_matrix": [
+    {
+      "path": "discovery/discovery-capability-map.json",
+      "input_type": "discovery capability map",
+      "status": "mapped",
+      "mapped_to": [
+        "bounded_context: customer_intake"
+      ],
+      "reason": "Validated capabilities were grouped into a single intake boundary",
+      "evidence": [
+        "discovery capability map"
+      ]
+    },
+    {
+      "path": "analysis/features/index.md",
+      "input_type": "auxiliary evidence",
+      "status": "excluded",
+      "mapped_to": [],
+      "reason": "Feature index only confirms terminology and does not become a primary domain source",
+      "evidence": [
+        "analysis/features/index.md"
+      ]
+    },
+    {
+      "path": "analysis/pages/ambiguous-page.md",
+      "input_type": "auxiliary evidence",
+      "status": "needs_review",
+      "mapped_to": [],
+      "reason": "Page semantics are unclear and need human clarification before final context mapping",
+      "evidence": [
+        "analysis/pages/ambiguous-page.md"
+      ]
+    }
+  ],
+  "unmapped_inputs": [
+    {
+      "path": "analysis/pages/ambiguous-page.md",
+      "input_type": "auxiliary evidence",
+      "reason": "Needs clarification before it can influence the model",
+      "rollback_point": "discovery capability map"
+    }
+  ],
   "positive_test_results": [
     "<positive_test_result_1>"
   ],
@@ -321,4 +377,3 @@
 2. 再补 `aggregates`、`entities`、`value_objects`、`domain_services`、`domain_events`。
 3. 每个对象都补 `positive_tests` 和 `negative_tests`。
 4. 再汇总 `item_results` 和整体验证报告。
-

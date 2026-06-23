@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .commands.review import approve_review, packet_review, record_review, reject_review, run_review
 from .commands.root import get_project_status, init_project, publish_project
+from .commands.routing import route_text
 from .commands.stage import list_stages, next_step, plan_stage, set_stage_status, stage_status, verify_stage
 from .core.errors import PLBError
 from .core.paths import ProjectPaths, ROOT_ENV_VAR
@@ -80,6 +81,10 @@ def _build_parser() -> argparse.ArgumentParser:
     publish_parser = subparsers.add_parser("publish", help="Publish the project bundle")
     publish_parser.add_argument("--project", "-p", default=None, help="Project label used by callers.")
 
+    route_parser = subparsers.add_parser("route", help="Route a natural-language request")
+    route_parser.add_argument("text")
+    route_parser.add_argument("--project", "-p", default=None, help="Project label used by callers.")
+
     stage_parser = subparsers.add_parser("stage", help="Stage operations")
     stage_subparsers = stage_parser.add_subparsers(dest="stage_command", required=True)
     stage_names = [stage.value for stage in STAGE_ORDER]
@@ -134,6 +139,8 @@ def _dispatch(args: argparse.Namespace) -> int:
         return _run(lambda: get_project_status(_store(root)))
     if args.command == "publish":
         return _run(lambda: publish_project(_store(root)))
+    if args.command == "route":
+        return _run(lambda: route_text(args.text, _store(root)))
 
     if args.command == "stage":
         if args.stage_command == "list":

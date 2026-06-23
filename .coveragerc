@@ -1,0 +1,8 @@
+[run]
+branch = true
+parallel = true
+source = src/plb
+
+[report]
+omit =
+    src/plb/__main__.py

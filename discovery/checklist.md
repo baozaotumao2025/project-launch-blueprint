@@ -10,6 +10,7 @@
 - [ ] `analysis/features/index.md`
 - [ ] `analysis/gwt/*.feature`
 - [ ] `analysis/relations/*.md`
+- [ ] 如果缺任何一项，先提醒用户自己准备，不允许由 LLM 或 Codex 代写
 
 ## 2. Build
 
@@ -27,6 +28,8 @@
 - [ ] 核心 page 全覆盖
 - [ ] 关键 story step 全覆盖
 - [ ] 关键 GWT 例子全覆盖
+- [ ] `analysis` 文件 inventory 已生成且逐项对账
+- [ ] inventory 中没有未覆盖或未显式排除的文件
 - [ ] 关系矩阵无明显漏项
 - [ ] 幻觉和重名已审查
 - [ ] 正向测试通过
@@ -39,3 +42,4 @@
 
 - [ ] `discovery capability map` 已通过
 - [ ] 否则回退到 `analysis`
+- [ ] 如果输入文件缺失，先阻断并提示补齐，不进入生成

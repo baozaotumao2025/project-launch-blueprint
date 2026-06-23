@@ -12,6 +12,27 @@
 {
   "goal": "<one_sentence_goal>",
   "scope": "<frozen_scope>",
+  "upstream_input_inventory": [
+    {
+      "input_key": "codex_goal",
+      "input_type": "codex goal",
+      "role": "primary",
+      "path": "<goal_text>",
+      "size_bytes": 0
+    }
+  ],
+  "upstream_input_coverage_matrix": [
+    {
+      "input_key": "codex_goal",
+      "input_type": "codex goal",
+      "role": "primary",
+      "path": "<goal_text>",
+      "status": "unmapped",
+      "mapped_to": [],
+      "reason": "",
+      "evidence": []
+    }
+  ],
   "goal_registry": [
     {
       "goal_id": "goal-1",
@@ -146,6 +167,27 @@
     "current_goal": "goal-1",
     "next_goal": ""
   },
+  "upstream_input_inventory": [
+    {
+      "input_key": "codex_goal",
+      "input_type": "codex goal",
+      "role": "primary",
+      "path": "<goal_text>",
+      "size_bytes": 0
+    }
+  ],
+  "upstream_input_coverage_matrix": [
+    {
+      "input_key": "codex_goal",
+      "input_type": "codex goal",
+      "role": "primary",
+      "path": "<goal_text>",
+      "status": "unmapped",
+      "mapped_to": [],
+      "reason": "",
+      "evidence": []
+    }
+  ],
   "passed_checks": [
     "goal clarity",
     "artifact mapping",

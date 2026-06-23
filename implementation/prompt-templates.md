@@ -45,7 +45,8 @@
 11. 必须同时给出正向验证和负向验证。
 12. 不能只输出概念性建议，必须输出可执行结构。
 13. 如果上游质量门禁未通过，只能停在计划或骨架，不得写入假实现。
-14. 输出必须符合 `output-schema.md`。
+14. 已批准的上游输入必须先冻结成 inventory / coverage matrix，不能在实现时临时补写。
+15. 输出必须符合 `output-schema.md`。
 
 请显式列出：
 - goal 如何被冻结成 scope
@@ -56,6 +57,7 @@
 - 每个 goal 完成后要回归哪些前序能力
 - 每个批次的 rollback point 是什么
 - 验证计划里有哪些正向和负向检查
+- 冻结了哪些 upstream inputs
 - 哪些内容来自主输入，哪些只来自辅助证据
 
 输出必须是 JSON 风格的 `implementation plan` 和 `implementation handoff report`。

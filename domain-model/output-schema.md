@@ -121,6 +121,9 @@
   "language_consistency": "",
   "aggregate_integrity": "",
   "behavior_richness": "",
+  "domain_input_inventory": [],
+  "domain_coverage_matrix": [],
+  "unmapped_inputs": [],
   "positive_test_results": [],
   "negative_test_results": [],
   "item_results": [],
@@ -129,6 +132,13 @@
   "accepted_items": []
 }
 ```
+
+### 2.1 Field Notes
+
+- `domain_input_inventory`: every approved upstream input and auxiliary evidence item considered by domain, in stable order.
+- `domain_coverage_matrix`: one row per inventory item, with the mapping decision and evidence.
+- `unmapped_inputs`: inputs that are intentionally excluded or still need human clarification.
+- `item_results`: model-level verdicts; the coverage matrix stays file/input-level, so both layers remain visible.
 
 ## 3. Usage Rule
 

@@ -9,6 +9,7 @@
 - [ ] 已读取 `design system map`
 - [ ] 已读取 `design-system validation report`
 - [ ] 已读取 `state machine map`
+- [ ] 已冻结已批准的上游输入 inventory
 - [ ] 已读取辅助证据中的 `domain model map`
 - [ ] 已读取辅助证据中的 `discovery capability map`
 
@@ -26,6 +27,7 @@
 - [ ] 已定义错误处理规则
 - [ ] 已定义 loading / empty / success / error 流程
 - [ ] 已定义验收条件
+- [ ] 已对上游输入逐项对账
 - [ ] 辅助证据只用于核验，不用于重新抽象
 
 ## 3. Validate
@@ -48,4 +50,3 @@
 
 - [ ] `vertical slice map` 已通过
 - [ ] 否则回退到 `api contract map` 或切片重切
-

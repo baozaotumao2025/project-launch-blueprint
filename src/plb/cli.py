@@ -15,6 +15,7 @@ from plb.commands.review import (
     run_review,
 )
 from plb.commands.root import get_project_status, init_project, publish_project
+from plb.commands.routing import route_text
 from plb.commands.stage import list_stages, next_step, plan_stage, set_stage_status, stage_status, verify_stage
 from plb.core.paths import ProjectPaths, resolve_project_root
 from plb.state.store import StateStore
@@ -130,6 +131,15 @@ def status(project: Annotated[str | None, typer.Option("--project", "-p")] = Non
 def publish(project: Annotated[str | None, typer.Option("--project", "-p")] = None) -> None:
     store = _store(project)
     _run(lambda: publish_project(store))
+
+
+@app.command()
+def route(
+    text: str,
+    project: Annotated[str | None, typer.Option("--project", "-p")] = None,
+) -> None:
+    store = _store(project)
+    _run(lambda: route_text(text, store))
 
 
 @stage_app.command("plan")

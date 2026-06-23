@@ -37,6 +37,8 @@
 ```json
 {
   "coverage": "",
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "state_purity": "",
   "event_purity": "",
   "guard_clarity": "",

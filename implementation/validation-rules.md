@@ -11,6 +11,8 @@
 
 辅助证据只能用于补足工程约束，不能把新的业务概念塞回实现层。
 
+已批准的上游输入必须先冻结成 inventory / coverage matrix，不能在实现时临时补写。
+
 ## 2. Pass Table
 
 | Check | Look At | Pass When | Fail When |
@@ -18,6 +20,7 @@
 | Goal Clarity | `Codex goal` | 目标能被改写成单一、可执行的实现范围 | 目标含糊，无法判断要生成什么 |
 | Goal Registry | frozen scope | goal 被拆成可追踪的 registry，且总数、顺序、依赖都清楚 | 只说“有几个步骤”，但没有 goal 级别拆解 |
 | Scope Freeze | goal + quality gates | 已经明确哪些内容进入这次实现，哪些内容不进入 | 边界漂移，边做边改题 |
+| Upstream Input Coverage | frozen upstream input inventory | 每个已批准上游输入都被显式对账 | 有输入未进入 inventory 或 coverage |
 | Artifact Mapping | 上游产物 | 每个上游产物都有明确代码落点 | 产物悬空，没有对应目录或文件 |
 | Scaffold First | code scaffold map | 先生成目录、文件和骨架，再填行为 | 先写散点代码，后补结构 |
 | Slice Coherence | task batches | 每个批次都能完成一条能力闭环 | 一个批次混入多个无关能力 |
@@ -49,6 +52,7 @@
 ## 5. Go Rules
 
 - `Codex goal` 必须能被翻译成单一实现目标。
+- 已批准的上游输入必须完成 inventory / coverage 对账。
 - 至少有一个明确的 `code_scaffold_map` 条目。
 - 至少有一个明确的 `task_batch_list` 批次。
 - 至少有一个明确的 `goal_registry` 条目。

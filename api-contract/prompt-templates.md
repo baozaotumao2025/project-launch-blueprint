@@ -36,11 +36,13 @@
 11. 必须先给出通过理由，再给出反例攻击结果。
 12. 如果任一负向测试通过了，说明模型有误，必须回退或重写。
 13. 辅助证据只能用于核验、补漏和反例攻击，不得提升为新的主概念。
-14. 输出必须符合 `output-schema.md`。
+14. 已批准的上游输入必须先冻结成 inventory / coverage matrix，不能在审查中临时补写。
+15. 输出必须符合 `output-schema.md`。
 
 请显式列出：
 - 每个契约对应哪些 capabilities
 - 每个契约对应哪些 domain objects 和状态阶段
+- 每个契约冻结了哪些 upstream inputs
 - 为什么这个 endpoint/method 这样设计
 - request / response / status / headers / error / auth / idempotency / versioning 的依据
 - 至少 3 个你主动构造的反例，以及为什么它们不会通过

@@ -8,6 +8,7 @@
 - [ ] 已读取 `discovery validation report`
 - [ ] 已读取 `domain model map`
 - [ ] 已读取 `state machine map`
+- [ ] 已冻结已批准的上游输入 inventory
 - [ ] 已读取辅助证据中的 story maps / features / gwt / relations
 
 ## 2. Build
@@ -27,6 +28,7 @@
 - [ ] 已绑定 capabilities
 - [ ] 已绑定 domain objects
 - [ ] 已绑定 state machine 阶段
+- [ ] 已对上游输入逐项对账
 - [ ] 辅助证据只用于核验，不用于重新抽象
 
 ## 3. Validate

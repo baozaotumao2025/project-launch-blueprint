@@ -35,12 +35,14 @@
 10. 必须先给出通过理由，再给出反例攻击结果。
 11. 如果任一负向测试通过了，说明模型有误，必须回退或重写。
 12. 辅助证据只能用于核验、补漏和反例攻击，不得提升为新的主概念。
-13. 输出必须符合 `output-schema.md`。
+13. 已批准的上游输入必须先冻结成 inventory / coverage matrix，不能在审查中临时补写。
+14. 输出必须符合 `output-schema.md`。
 
 请显式列出：
 - 每个切片对应哪些 capabilities
 - 每个切片对应哪些 api contracts
 - 每个切片对应哪些 design system components
+- 每个切片冻结了哪些 upstream inputs
 - 路由、页面、hook、service、repository、mock 的分工
 - mock 和 real 如何切换
 - acceptance criteria 是什么

@@ -68,6 +68,8 @@
 ```json
 {
   "coverage": "",
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "slice_cohesion": "",
   "route_cohesion": "",
   "state_alignment": "",
@@ -89,4 +91,3 @@
 - 先输出 vertical slice map
 - 再输出 vertical-slice validation report
 - 不输出 vertical-slice 以外的对象
-

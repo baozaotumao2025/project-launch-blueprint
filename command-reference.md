@@ -12,6 +12,7 @@
 
 - 初始化 project space
 - 创建 `.project-launch-blueprint/` 运行目录
+- materialize 最小发行包到 `records/project-launch-blueprint/`
 - 建立 state DB、projections、audits、exports、logs、backups
 - 为后续 stage 和 review 流程建立基础状态
 
@@ -49,7 +50,24 @@
 
 - 无
 
-### 1.3 `uv run plb publish`
+### 1.3 `uv run plb route <text>`
+
+用途：
+
+- 接收自然语言意图并路由到同一套 stage / review / publish 执行函数
+- 让 CLI 入口和自然语言入口共享同一个 workflow 引擎
+
+参数：
+
+- `--root <path>`
+- `--project <project_key>`
+- `<text>`: 自然语言意图，例如 `开始 discovery`、`生成 discovery 审查包`、`推进 discovery`
+
+状态变化：
+
+- 由路由到的具体命令决定
+
+### 1.4 `uv run plb publish`
 
 用途：
 
@@ -86,6 +104,7 @@ uv run plb stage <stage_name> set <status>
 - `next`：生成 discovery packet，执行 review loop，完成后推进到 domain
 - `verify`：只检查 discovery 产物是否可进入 domain
 - `set`：手动写入阶段状态，便于推进、阻塞或回退
+- `plan` / `review packet` 会先检查 discovery 所需的 `analysis` 输入文件，缺失时直接阻断并提示用户自己准备
 
 ### 2.2 Domain
 
@@ -145,6 +164,7 @@ uv run plb stage <stage_name> set <status>
 - 生成只读审查包
 - 固化当前阶段和已批准上游输入
 - 为 `review run` 提供冻结输入
+- 同时注入 stage prompt bundle，保证 subagent 执行时能读取 `method.md`、`validation-rules.md`、`output-schema.md`、`prompt-templates.md`、`example-output.md` 和 `checklist.md`
 
 参数：
 
@@ -160,6 +180,7 @@ uv run plb stage <stage_name> set <status>
 - 使用隔离上下文执行审查
 - 落盘审查结果
 - 这是“真的审查”的一步，不是只看摘要
+- 审查必须通过独立 subagent / worker 进程执行，避免上下文污染
 
 参数：
 
@@ -189,6 +210,7 @@ uv run plb stage <stage_name> set <status>
 - 基于当前 worker verdict 做最终批准落库
 - 仅当 worker verdict 为 `passed` 时，才会把 review state 落成 `passed`
 - 不能绕过 worker verdict 手动把不通过的结果改成 `passed`
+- `approve` 会把 stage 最终落到可推进状态，并同步写入生命周期记录
 
 参数：
 
@@ -202,6 +224,7 @@ uv run plb stage <stage_name> set <status>
 - 基于当前 worker verdict 做最终拒绝落库
 - `needs_revision` 和 `failed` 都会按 worker verdict 原样落库
 - 不能用 reject 手工改写 worker verdict
+- `reject` 会同步更新 stage 状态和生命周期记录，供后续恢复和排障
 
 参数：
 

@@ -6,6 +6,7 @@
 
 - [ ] 已读取 `api contract map`
 - [ ] 已读取 `api-contract validation report`
+- [ ] 已冻结已批准的上游输入 inventory
 - [ ] 已读取辅助证据中的 `state machine map`
 - [ ] 已读取辅助证据中的 `domain model map`
 - [ ] 已读取辅助证据中的 `discovery capability map`
@@ -23,6 +24,7 @@
 - [ ] 已定义无障碍规则
 - [ ] 已定义响应式规则
 - [ ] 已定义使用规范
+- [ ] 已对上游输入逐项对账
 - [ ] 辅助证据只用于核验，不用于重新抽象
 
 ## 3. Validate
@@ -47,4 +49,3 @@
 
 - [ ] `design system map` 已通过
 - [ ] 否则回退到 `api contract map` 或组件重切
-

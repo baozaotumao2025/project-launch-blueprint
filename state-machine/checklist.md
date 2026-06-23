@@ -6,6 +6,7 @@
 
 - [ ] 已读取 `discovery capability map`
 - [ ] 已读取 `domain model map`
+- [ ] 已冻结已批准的上游输入 inventory
 - [ ] 已读取辅助证据中的 `story maps`
 - [ ] 已读取辅助证据中的 `features`
 - [ ] 已读取辅助证据中的 `gwt`
@@ -22,6 +23,7 @@
 - [ ] 已定义进入条件和退出条件
 - [ ] 已绑定 capabilities
 - [ ] 已绑定 domain objects
+- [ ] 已对上游输入逐项对账
 - [ ] 辅助证据只用于核验，不用于重新抽象
 
 ## 3. Validate

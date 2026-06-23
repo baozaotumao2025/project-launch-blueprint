@@ -128,6 +128,9 @@ def _serialize_run(store: StateStore, run: dict[str, object]) -> None:
         "goal_registry": goal_registry,
         "goal_progress": asdict(run["goal_progress"]),
         "regression_checks": regression_checks,
+        "upstream_input_inventory": run.get("upstream_input_inventory", []),
+        "upstream_input_summary": run.get("upstream_input_summary", {}),
+        "upstream_input_coverage_matrix": run.get("upstream_input_coverage_matrix", []),
         "implementation_plan": run.get("implementation_plan", []),
         "code_scaffold_map": run.get("code_scaffold_map", []),
         "directory_tree": run.get("directory_tree", []),
@@ -545,6 +548,58 @@ def _build_verification_plan(goal_registry: list[GoalEntry], regressions: list[R
     }
 
 
+def _build_upstream_input_inventory(inputs: dict[str, str]) -> list[dict[str, object]]:
+    role_map = {
+        "codex_goal": "primary",
+        "quality_gates_validation_report": "primary",
+        "vertical_slice_map": "primary",
+        "api_contract_map": "primary",
+        "design_system_map": "primary",
+        "state_machine_map": "primary",
+        "domain_model_map": "primary",
+        "discovery_capability_map": "primary",
+        "technical_solution": "secondary",
+    }
+    inventory: list[dict[str, object]] = []
+    for key, value in inputs.items():
+        inventory.append(
+            {
+                "input_key": key,
+                "input_type": key.replace("_", " "),
+                "role": role_map.get(key, "secondary"),
+                "path": value,
+                "size_bytes": len(str(value).encode("utf-8")),
+            }
+        )
+    return inventory
+
+
+def _build_upstream_input_summary(inventory: list[dict[str, object]]) -> dict[str, object]:
+    role_counts: dict[str, int] = {}
+    for item in inventory:
+        role = str(item.get("role", ""))
+        role_counts[role] = role_counts.get(role, 0) + 1
+    return {"total_inputs": len(inventory), "role_counts": dict(sorted(role_counts.items()))}
+
+
+def _build_upstream_input_coverage_matrix(inventory: list[dict[str, object]]) -> list[dict[str, object]]:
+    matrix: list[dict[str, object]] = []
+    for item in inventory:
+        matrix.append(
+            {
+                "input_key": item["input_key"],
+                "input_type": item["input_type"],
+                "role": item["role"],
+                "path": item["path"],
+                "status": "unmapped",
+                "mapped_to": [],
+                "reason": "",
+                "evidence": [],
+            }
+        )
+    return matrix
+
+
 def _build_implementation_steps(goal_registry: list[GoalEntry], scaffold_map: list[dict[str, object]], task_batches: list[dict[str, object]]) -> list[dict[str, object]]:
     return [
         {
@@ -615,6 +670,21 @@ def plan_implementation(store: StateStore, goal_text: str | None, fresh_reviewer
     goal_registry = _build_goal_registry(goal_text, scope)
     progress = _goal_progress(goal_registry)
     regressions = _build_regression_checks(goal_registry)
+    upstream_input_inventory = _build_upstream_input_inventory(
+        {
+            "codex_goal": scope,
+            "quality_gates_validation_report": "",
+            "vertical_slice_map": "",
+            "api_contract_map": "",
+            "design_system_map": "",
+            "state_machine_map": "",
+            "domain_model_map": "",
+            "discovery_capability_map": "",
+            "technical_solution": "",
+        }
+    )
+    upstream_input_summary = _build_upstream_input_summary(upstream_input_inventory)
+    upstream_input_coverage_matrix = _build_upstream_input_coverage_matrix(upstream_input_inventory)
     scaffold_map = _build_code_scaffold_map(goal_registry, clauses)
     directory_tree = _build_directory_tree(scaffold_map)
     bootstrap_manifest = _build_bootstrap_manifest(scaffold_map, directory_tree)
@@ -637,6 +707,9 @@ def plan_implementation(store: StateStore, goal_text: str | None, fresh_reviewer
             "discovery_capability_map": "",
             "technical_solution": "",
         },
+        "upstream_input_inventory": upstream_input_inventory,
+        "upstream_input_summary": upstream_input_summary,
+        "upstream_input_coverage_matrix": upstream_input_coverage_matrix,
         "goal_registry": goal_registry,
         "goal_progress": progress,
         "regression_checks": regressions,
@@ -686,6 +759,9 @@ def plan_implementation(store: StateStore, goal_text: str | None, fresh_reviewer
             "branch_commit_plan": branch_commit_plan,
             "verification_plan": verification_plan,
             "inputs": run["inputs"],
+            "upstream_input_inventory": upstream_input_inventory,
+            "upstream_input_summary": upstream_input_summary,
+            "upstream_input_coverage_matrix": upstream_input_coverage_matrix,
             "assumptions": run["assumptions"],
             "blocked_items": [],
             "handoff_notes": [
@@ -705,7 +781,15 @@ def status_implementation(store: StateStore) -> CommandResult:
         return CommandResult(
             status="ok",
             message="implementation run not initialized",
-            data={"goal_progress": asdict(GoalProgress()), "goal_registry": [], "regression_checks": [], "rollback_point": "analysis"},
+            data={
+                "goal_progress": asdict(GoalProgress()),
+                "goal_registry": [],
+                "regression_checks": [],
+                "upstream_input_inventory": [],
+                "upstream_input_summary": {},
+                "upstream_input_coverage_matrix": [],
+                "rollback_point": "analysis",
+            },
         )
 
     goal_registry = _load_goals(run)
@@ -739,6 +823,9 @@ def status_implementation(store: StateStore) -> CommandResult:
             "task_batch_list": run.get("task_batch_list", []),
             "branch_commit_plan": run.get("branch_commit_plan", []),
             "verification_plan": run.get("verification_plan", {}),
+            "upstream_input_inventory": run.get("upstream_input_inventory", []),
+            "upstream_input_summary": run.get("upstream_input_summary", {}),
+            "upstream_input_coverage_matrix": run.get("upstream_input_coverage_matrix", []),
             "assumptions": run.get("assumptions", []),
             "latest_verification": latest_verification,
             "rollback_point": run.get("rollback_point", "analysis"),
@@ -824,7 +911,9 @@ def next_implementation(store: StateStore, goal_id: str | None = None, regress: 
             check.status = "passed" if regression_passed else "failed"
             if regression_passed:
                 check.evidence = [f"regression reran: {', '.join(checked_goals) or 'none'}"]
-            elif regression_blockers:
+            else:
+                # A failed regression run must always carry at least one blocker.
+                assert regression_blockers, "failed regressions must report blockers"
                 check.evidence = regression_blockers
 
     current_index = goal_registry.index(current_goal)
@@ -925,6 +1014,9 @@ def verify_implementation(store: StateStore, strict: bool = False) -> CommandRes
             "goal_registry": [asdict(goal) for goal in goal_registry],
             "regression_checks": [asdict(check) for check in regressions],
             "verification_plan": run.get("verification_plan", {}),
+            "upstream_input_inventory": run.get("upstream_input_inventory", []),
+            "upstream_input_summary": run.get("upstream_input_summary", {}),
+            "upstream_input_coverage_matrix": run.get("upstream_input_coverage_matrix", []),
             "directory_tree": run.get("directory_tree", []),
             "bootstrap_manifest": run.get("bootstrap_manifest", []),
             "latest_verification": latest_verification,

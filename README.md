@@ -20,14 +20,40 @@ The operating sequence is intentionally simple:
 plan -> status -> review packet -> review run -> review record -> approve/reject -> next
 ```
 
-`implementation` is the last bridge. It turns approved stage outputs into real prototype code, tests, and configuration inside the target project.
+`implementation` is the last bridge. It turns approved stage outputs into real prototype code, tests, and configuration inside the target project. In the current project, that bridge is code-driven and verification-driven: it produces implementation plans, scaffolds, regression checks, and handoff artifacts. A rendered interactive UI still depends on the target project's own frontend runtime and code generation path.
+
+Every stage must first freeze a stage-document inventory and matching coverage template before review can pass. `discovery` additionally builds a file-level `analysis_inventory`, and `domain` additionally builds an input inventory from approved discovery artifacts and auxiliary evidence. In both cases, the inventory is code-generated, frozen into the review packet, and rejected if the coverage rows do not align.
 
 The same internal workflow should be reachable through two surfaces:
 
 - `CLI` for deterministic execution and testing
 - natural language for guided operation and intent routing
 
+You can route the natural-language surface with `uv run plb route "<text>"`, and it will call the same underlying workflow functions as the typed commands.
+
+## Practical E2E Path
+
+For a strict end-to-end run, keep the project root in a temporary directory, seed a small mock `analysis/`, and drive the same command surface the user would use:
+
+1. `uv run plb init`
+2. `uv run plb status`
+3. Create the minimal `analysis/` inputs required by `discovery`, plus a few extra files so inventory coverage can prove nothing was skipped
+4. Run `discovery` through `plan -> status -> review packet -> review run -> review record -> approve -> next`
+5. Repeat the same cycle for `domain`, `state`, `api`, `design`, `slice`, and `gates`
+6. Enter `implementation` with a concrete `--goal`
+7. Run `stage implementation next` until all implementation goals are completed
+8. Finish with `stage implementation verify --strict`
+
+For negative coverage, the current project expects tests to also verify these cases:
+
+- `discovery` blocks when `analysis/` is incomplete
+- a tampered coverage matrix is rejected by the isolated review worker
+- natural-language routing returns `blocked` when the request is too vague
+- `implementation` blocks when `--goal` is missing
+
 The bootstrap entry is dependency-light and should fail hard when the target root is invalid. Use `--root` or `PLB_ROOT_DIR` when you want to point at a project explicitly.
+
+The test suite is wired to `pytest-cov`, so `uv run pytest` now prints a `src/plb` coverage baseline by default.
 
 ## Codex Quick Start
 
@@ -116,6 +142,7 @@ Only the first three should be preserved as durable project history when they he
 
 - `README.md` for the public overview
 - `docs/` for installation, user manual, and share preparation
+- `adr/` for architecture decision records
 - `command-reference.md` for the canonical command contract
 - `workflow-state.md` for state and revision rules
 - `implementation/` for the final bridge into prototype code
@@ -125,11 +152,18 @@ Only the first three should be preserved as durable project history when they he
 - [User manual](./docs/step-04-user-manual.md)
 - [Install from GitHub link](./docs/step-05-install-from-github-link.md)
 - [Share readiness checklist](./docs/step-06-share-readiness-checklist.md)
+- [Tutorials index](./docs/tutorial/index.md)
+- [Architecture decision records](./adr/README.md)
 
 ## Core Rules
 
 - 先验证，再抽象
 - 主输入优先，辅助证据只用于核验、补漏和反例攻击
+- Each stage must enumerate its stage documents, freeze an inventory, and require a matching coverage matrix before review can pass
+- `discovery` and `domain` additionally freeze their own external input inventories
+- `state`, `api`, `design`, `slice`, and `gates` additionally freeze approved upstream input bundles before review can pass
+- `implementation` consumes approved upstream artifacts and emits implementation plans, scaffolds, regression checks, and handoff records; it does not magically produce a finished interactive UI without the target project's own runtime/code path
+- Use coverage-driven development plus explicit invariants: cover positive, negative, and boundary cases, and move critical assumptions into code-level assertions or precondition checks instead of prompt-only rules
 - 每层只做一件事
 - 每层都必须有正向测试和负向测试
 - 每层都必须有可执行回退点
@@ -140,5 +174,5 @@ Before sharing this repository, confirm the following:
 
 - `.venv/`, `__pycache__/`, and `.pytest_cache/` are not committed
 - secrets are not stored in the repository
-- `SKILL.md`, `agents/openai.yaml`, `README.md`, and `docs/` are present
+- `SKILL.md`, `agents/openai.yaml`, `README.md`, `docs/`, and `adr/` are present
 - the repository is stable enough for another reader or Codex session to follow without extra explanation

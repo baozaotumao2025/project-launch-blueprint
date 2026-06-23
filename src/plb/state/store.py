@@ -4,9 +4,21 @@ import json
 import sqlite3
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from contextlib import closing
 from pathlib import Path
 
-from plb.core.models import ProjectState, ReviewRecord, ReviewState, StageRecord, StageStatus, WorkflowStage
+from plb.core.models import (
+    ProjectState,
+    ReviewRecord,
+    ReviewState,
+    StageHealth,
+    StageLifecycleEvent,
+    StageLifecyclePhase,
+    StageLifecycleRecord,
+    StageRecord,
+    StageStatus,
+    WorkflowStage,
+)
 from plb.core.paths import ProjectPaths
 
 
@@ -35,7 +47,7 @@ class StateStore:
         if not self.paths.state_db.exists():
             return StateSnapshot(data={})
 
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             row = conn.execute(
                 "select project_state, payload from project_state_snapshot order by id desc limit 1"
             ).fetchone()
@@ -49,7 +61,7 @@ class StateStore:
         if not self.paths.state_db.exists():
             return StageRecord(stage=stage)
 
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             row = conn.execute(
                 "select status, payload from stage_progress where stage = ?",
                 (stage.value,),
@@ -58,6 +70,60 @@ class StateStore:
                 return StageRecord(stage=stage)
             status, payload = row
             return StageRecord(stage=stage, status=StageStatus(status), payload=json.loads(payload) if payload else {})
+
+    def load_stage_lifecycle(self, stage: WorkflowStage) -> StageLifecycleRecord:
+        if not self.paths.state_db.exists():
+            return StageLifecycleRecord(stage=stage)
+
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
+            row = conn.execute(
+                """
+                select phase, health, status, last_event, details, updated_at
+                from stage_lifecycle
+                where stage = ?
+                """,
+                (stage.value,),
+            ).fetchone()
+            if row is None:
+                return StageLifecycleRecord(stage=stage)
+            phase, health, status, last_event, details, updated_at = row
+            return StageLifecycleRecord(
+                stage=stage,
+                phase=StageLifecyclePhase(phase),
+                health=StageHealth(health),
+                status=StageStatus(status),
+                last_event=str(last_event),
+                details=json.loads(details) if details else {},
+                updated_at=str(updated_at),
+            )
+
+    def stage_lifecycle_events(self, stage: WorkflowStage) -> list[StageLifecycleEvent]:
+        if not self.paths.state_db.exists():
+            return []
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
+            rows = conn.execute(
+                """
+                select event, phase, health, status, details, created_at
+                from stage_lifecycle_events
+                where stage = ?
+                order by id asc
+                """,
+                (stage.value,),
+            ).fetchall()
+        events: list[StageLifecycleEvent] = []
+        for event, phase, health, status, details, created_at in rows:
+            events.append(
+                StageLifecycleEvent(
+                    stage=stage,
+                    event=str(event),
+                    phase=StageLifecyclePhase(phase),
+                    health=StageHealth(health),
+                    status=StageStatus(status),
+                    details=json.loads(details) if details else {},
+                    created_at=str(created_at),
+                )
+            )
+        return events
 
     def set_stage(
         self,
@@ -68,7 +134,7 @@ class StateStore:
         self.ensure_layout()
         payload_text = json.dumps(payload or {}, ensure_ascii=False, sort_keys=True)
         now = datetime.now(timezone.utc).isoformat()
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             conn.execute(
                 """
                 insert into stage_progress(stage, status, payload, updated_at)
@@ -83,11 +149,80 @@ class StateStore:
             conn.commit()
         return StageRecord(stage=stage, status=status, payload=payload or {})
 
+    def record_stage_lifecycle(
+        self,
+        stage: WorkflowStage,
+        event: str,
+        *,
+        phase: StageLifecyclePhase | None = None,
+        health: StageHealth | None = None,
+        status: StageStatus | None = None,
+        details: dict[str, object] | None = None,
+    ) -> StageLifecycleRecord:
+        self.ensure_layout()
+        current = self.load_stage_lifecycle(stage)
+        next_phase = phase or current.phase
+        next_health = health or current.health
+        next_status = status or current.status
+        next_details = dict(current.details)
+        if details:
+            next_details.update(details)
+        now = datetime.now(timezone.utc).isoformat()
+        details_text = json.dumps(next_details or {}, ensure_ascii=False, sort_keys=True)
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
+            conn.execute(
+                """
+                insert into stage_lifecycle(stage, phase, health, status, last_event, details, updated_at)
+                values (?, ?, ?, ?, ?, ?, ?)
+                on conflict(stage) do update set
+                    phase = excluded.phase,
+                    health = excluded.health,
+                    status = excluded.status,
+                    last_event = excluded.last_event,
+                    details = excluded.details,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    stage.value,
+                    next_phase.value,
+                    next_health.value,
+                    next_status.value,
+                    event,
+                    details_text,
+                    now,
+                ),
+            )
+            conn.execute(
+                """
+                insert into stage_lifecycle_events(stage, event, phase, health, status, details, created_at)
+                values (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    stage.value,
+                    event,
+                    next_phase.value,
+                    next_health.value,
+                    next_status.value,
+                    details_text,
+                    now,
+                ),
+            )
+            conn.commit()
+        return StageLifecycleRecord(
+            stage=stage,
+            phase=next_phase,
+            health=next_health,
+            status=next_status,
+            last_event=event,
+            details=next_details,
+            updated_at=now,
+        )
+
     def load_review(self, stage: WorkflowStage) -> ReviewRecord:
         if not self.paths.state_db.exists():
             return ReviewRecord(stage=stage)
 
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             row = conn.execute(
                 "select state, payload from review_progress where stage = ?",
                 (stage.value,),
@@ -100,7 +235,7 @@ class StateStore:
     def load_implementation_run(self) -> dict[str, object] | None:
         if not self.paths.state_db.exists():
             return None
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             row = conn.execute(
                 "select goal, scope, fresh_reviewer, status, payload from implementation_run where stage = ?",
                 (WorkflowStage.IMPLEMENTATION.value,),
@@ -130,7 +265,7 @@ class StateStore:
         self.ensure_layout()
         now = datetime.now(timezone.utc).isoformat()
         payload_text = json.dumps(payload or {}, ensure_ascii=False, sort_keys=True)
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             conn.execute(
                 """
                 insert into implementation_run(stage, goal, scope, fresh_reviewer, status, payload, created_at, updated_at)
@@ -195,7 +330,7 @@ class StateStore:
         self.ensure_layout()
         payload_text = json.dumps(payload or {}, ensure_ascii=False, sort_keys=True)
         now = datetime.now(timezone.utc).isoformat()
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             conn.execute(
                 """
                 insert into review_progress(stage, state, payload, updated_at)
@@ -231,7 +366,7 @@ class StateStore:
     def completed_stage_count(self) -> int:
         if not self.paths.state_db.exists():
             return 0
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             row = conn.execute(
                 "select count(*) from stage_progress where status = ?",
                 (StageStatus.COMPLETED.value,),
@@ -242,15 +377,31 @@ class StateStore:
         record = self.load_stage(stage)
         if record.status == StageStatus.PENDING and record.payload == {} and not self.paths.state_db.exists():
             self.set_stage(stage, StageStatus.PENDING)
+            self.record_stage_lifecycle(
+                stage,
+                "seeded",
+                phase=StageLifecyclePhase.SEEDED,
+                health=StageHealth.STABLE,
+                status=StageStatus.PENDING,
+                details={"seeded": True},
+            )
         elif record.status == StageStatus.PENDING and not self._stage_exists(stage):
             self.set_stage(stage, StageStatus.PENDING)
+            self.record_stage_lifecycle(
+                stage,
+                "seeded",
+                phase=StageLifecyclePhase.SEEDED,
+                health=StageHealth.STABLE,
+                status=StageStatus.PENDING,
+                details={"seeded": True},
+            )
         return self.load_stage(stage)
 
     def save(self, snapshot: StateSnapshot) -> None:
         self.ensure_layout()
         payload = json.dumps(snapshot.data or {}, ensure_ascii=False, sort_keys=True)
         now = datetime.now(timezone.utc).isoformat()
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             conn.execute(
                 """
                 insert into project_state_snapshot(project_state, payload, created_at)
@@ -266,7 +417,7 @@ class StateStore:
         return snapshot
 
     def _ensure_database(self) -> None:
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             conn.execute(
                 """
                 create table if not exists project_state_snapshot (
@@ -284,6 +435,33 @@ class StateStore:
                     status text not null,
                     payload text not null,
                     updated_at text not null
+                )
+                """
+            )
+            conn.execute(
+                """
+                create table if not exists stage_lifecycle (
+                    stage text primary key,
+                    phase text not null,
+                    health text not null,
+                    status text not null,
+                    last_event text not null,
+                    details text not null,
+                    updated_at text not null
+                )
+                """
+            )
+            conn.execute(
+                """
+                create table if not exists stage_lifecycle_events (
+                    id integer primary key autoincrement,
+                    stage text not null,
+                    event text not null,
+                    phase text not null,
+                    health text not null,
+                    status text not null,
+                    details text not null,
+                    created_at text not null
                 )
                 """
             )
@@ -316,7 +494,7 @@ class StateStore:
     def _stage_exists(self, stage: WorkflowStage) -> bool:
         if not self.paths.state_db.exists():
             return False
-        with sqlite3.connect(self.paths.state_db) as conn:
+        with closing(sqlite3.connect(self.paths.state_db)) as conn:
             row = conn.execute(
                 "select 1 from stage_progress where stage = ?",
                 (stage.value,),

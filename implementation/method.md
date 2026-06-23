@@ -19,16 +19,18 @@
   - `domain model map`
   - `discovery capability map`
 - 辅助证据：
-  - `technical-solution.md`
-  - 当前代码仓库结构
-  - 现有 `analysis` 中的项目约束说明
-  - `../cli-architecture.md`
-  - `../workflow-state.md`
+- `technical-solution.md`
+- 当前代码仓库结构
+- 现有 `analysis` 中的项目约束说明
+- `../cli-architecture.md`
+- `../workflow-state.md`
+- 冻结后的上游输入 inventory / coverage matrix
 
 ## 2.1 Input Rules
 
 - `Codex goal` 是入口级输入，用来决定这次实现到底要生成什么。
 - `quality-gates validation report` 是最高优先级输入，表示哪些内容已经可以进入实现。
+- 已批准的上游输入必须先冻结成 inventory / coverage matrix，不能在实现时临时补写。
 - 上游已经验证过的能力、边界、状态、契约和组件，不得在本层重新抽象成新的业务概念。
 - 辅助证据只允许用于工程约束、目录约束和实现约束，不得提升为新的业务语义。
 - 如果上游仍有未通过项，本层只能停在实现计划，不得把未验证内容直接写进代码。

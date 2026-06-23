@@ -36,10 +36,16 @@
 11. 如果任一负向测试通过了，说明模型有误，必须回退或重写。
 12. 辅助证据只能用于核验、补漏和反例攻击，不得提升为新的主概念。
 13. 输出必须符合 `output-schema.md`。
+14. `domain_input_inventory` 里的每个输入都必须在 `domain_coverage_matrix` 中出现一次，不能遗漏，也不能重复归账。
+15. `domain_coverage_matrix.status` 只能使用 `mapped`、`excluded` 或 `needs_review`。
+16. 任何未能归入模型的输入，必须写成显式 exclusion，并说明原因。
 
 请显式列出：
 - 你把哪些 capability 合并成了同一个 bounded context
 - 你为什么没有把某些看起来相近的 capability 合并
+- `domain_input_inventory` 的逐输入对账结果
+- `domain_coverage_matrix` 的逐输入对账结果
+- `unmapped_inputs` 的显式排除结果
 - 每个 aggregate 的不变量是什么
 - 每个 entity / value object 的判定依据是什么
 - 每个 context 之间的关系类型是什么
@@ -78,6 +84,7 @@
 11. 你能否构造一个最小反例，直接击穿这个模型？
 12. 如果把某个 context 改名为页面名，它为什么会错？
 13. 哪个对象最容易被误判成 entity/value object/service？为什么？
+14. 是否遗漏了任何 inventory 输入的对账？
 ```
 
 ## 3. Handoff

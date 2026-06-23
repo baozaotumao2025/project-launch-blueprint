@@ -12,3 +12,7 @@
 - [Step 04: user manual](./step-04-user-manual.md)
 - [Step 05: install from GitHub link](./step-05-install-from-github-link.md)
 - [Step 06: share readiness checklist](./step-06-share-readiness-checklist.md)
+
+## Tutorials
+
+- [Tutorials index](./tutorial/index.md)

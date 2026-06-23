@@ -16,6 +16,7 @@
 - [ ] 已读取 `design-system validation report`
 - [ ] 已读取 `vertical slice map`
 - [ ] 已读取 `vertical-slice validation report`
+- [ ] 已冻结已批准的上游输入 inventory
 - [ ] 已读取辅助证据中的 `analysis`
 
 ## 2. Build
@@ -27,6 +28,7 @@
 - [ ] 已定义回退方案
 - [ ] 已定义部署前检查项
 - [ ] 已定义发布动作
+- [ ] 已对上游输入逐项对账
 - [ ] 辅助证据只用于核验，不用于重新抽象
 
 ## 3. Validate
@@ -50,4 +52,3 @@
 
 - [ ] `quality gate map` 已通过
 - [ ] 否则回退到最相关阶段重切
-

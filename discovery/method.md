@@ -26,12 +26,12 @@
 
 | Step | Input | Action | Output | Can Roll Back |
 | --- | --- | --- | --- | --- |
-| Collect | `analysis` 全量工件 | 收集已有结构化信息 | 原始材料清单 | Yes |
+| Collect | `analysis` 全量工件 | 逐文件枚举并收集已有结构化信息，生成 inventory 和覆盖模板 | 原始材料清单 | Yes |
 | Extract | `brief` / `story-maps` / `pages` / `features` / `gwt` / `relations` | 分别提取目标、阶段、职责、候选能力、例子、覆盖关系 | 提取片段 | Yes |
 | Merge | 提取片段 | 合并语义一致内容，去重，拆分多阶段内容 | capability 候选 | Yes |
 | Attach Evidence | capability 候选 | 补齐 actor、trigger、input、outcome、lifecycle_stage 等字段 | 带证据的 capability | Yes |
 | Counterexample Sweep | 带证据的 capability | 用反例攻击候选能力，查页面化、技术化、混阶段、漏项、同词异义 | 反例审查记录 | Yes |
-| Validate | 带证据的 capability | 用 `validation-rules.md` 检查来源、覆盖、纯度、生命周期、可测试性、关系 | discovery validation report | Yes |
+| Validate | 带证据的 capability | 用 `validation-rules.md` 检查来源、文件覆盖、纯度、生命周期、可测试性、关系 | discovery validation report | Yes |
 | Decide | discovery validation report | 通过则进入下一阶段，不通过则回退 | go / no-go | Yes |
 
 ## 5. Rules
@@ -43,6 +43,8 @@
 - 同词异义必须显式拆分或标注
 - 只是“看起来相关”不能作为合并依据
 - 不通过就回退到 `analysis` 补齐或重写
+- 在读取输入之前必须先检查 `analysis/brief.md`、`analysis/story-maps/*.md`、`analysis/pages/*.md`、`analysis/features/index.md`、`analysis/gwt/*.feature`、`analysis/relations/*.md` 是否齐备；缺任何一个都要阻断，不允许 LLM 或 Codex 自动补写
+- 任何进入生成流程的 `analysis` 文件都必须出现在 inventory 里，并在覆盖模板里有且只有一条对应记录
 
 ## 6. Design Heuristics
 

@@ -7,6 +7,8 @@
 - [ ] 已读取 `discovery capability map`
 - [ ] 已读取 `discovery validation report`
 - [ ] 已读取辅助证据中的 persona / story map / feature / relations
+- [ ] `domain_input_inventory` 已生成且逐项对账
+- [ ] inventory 中没有未覆盖或未显式排除的输入
 
 ## 2. Build
 
@@ -21,6 +23,7 @@
 - [ ] 已定义 context map
 - [ ] 已定义不变量和所有权
 - [ ] 辅助证据只用于核验，不用于重新抽象
+- [ ] 覆盖矩阵已生成，且每个输入只有一条记录
 
 ## 3. Validate
 
@@ -36,6 +39,7 @@
 - [ ] LLM 能明确说出回退点
 - [ ] 关键歧义已拆解
 - [ ] 没有把辅助证据当成新的主输入
+- [ ] 无未对账输入
 
 ## 4. Decide
 

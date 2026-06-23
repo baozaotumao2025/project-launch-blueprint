@@ -41,6 +41,8 @@
 ```json
 {
   "coverage": "",
+  "upstream_input_inventory": [],
+  "upstream_input_coverage_matrix": [],
   "risk_coverage": "",
   "test_pyramid_balance": "",
   "observability_fit": "",
@@ -60,4 +62,3 @@
 - 先输出 quality gate map
 - 再输出 quality-gates validation report
 - 不输出 quality-gates 以外的对象
-
